@@ -1,5 +1,63 @@
 <template>
   <div id="app">
+    <TestChart />
+  </div>
+</template>
+
+<script>
+import TestChart from './components/TestChart.vue';
+
+export default {
+  name: 'App',
+  components: {
+    TestChart,
+  },
+};
+</script>
+
+<style>
+#app {
+  text-align: center;
+  margin-top: 50px;
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <template>
+  <div id="app">
     <header class="text-center py-4 bg-primary text-white">
       <h1 style="font-size: 3rem;">Visualization Test</h1>
       <link
@@ -143,4 +201,4 @@ export default {
 .chart-container {
   min-height: 300px;
 }
-</style>
+</style> -->

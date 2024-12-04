@@ -150,7 +150,6 @@ Desktop.ini
 # Temporary files
 *.swp
 *.swo
-*.bak
 *.tmp
 *.temp
 
@@ -159,11 +158,9 @@ Desktop.ini
 /public/
 
 # Flask-related
-*.pyc
 __pycache__/
 instance/
 *.sqlite3
-*.db
 *.db-journal
 *.pyo
 
@@ -174,12 +171,6 @@ env/
 # Jest test results
 jest-test-results.json
 
-# User data files
-*.csv
-*.json
-*.xlsx
-*.xml
-*.txt
 
 # Custom build output
 /docs/build/

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { createApp } from 'vue';
+import { createApp } from 'vue/dist/vue.esm-bundler';
 import App from './App.vue';
 
 axios.defaults.baseURL = 'http://127.0.0.1:8081';  // Flask 서버 기본 URL 설정

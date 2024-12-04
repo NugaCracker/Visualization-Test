@@ -1,0 +1,13 @@
+★ backend = 전반적인 연결 및 설정 담당
+	▷ __init__.py = 프론트 연결 및 config 설정하는 곳
+	▷ api_common.py = rest api를 사용해서 만들어진 테이블과 연결하는 곳 (새로운 요청 시 api_(이름).py로 추가요망)
+				     - preprocessors : 프론트에서 요청을 받는 곳
+				     - postprocessor : 데이터를 가져온 후 프론트에 전달 전 후처리(libCommon)
+
+★ backend_model = DB 생성 수정 등 데이터
+	▷ database.py = 테스트 테이블의 더미데이터가 만들어지는곳 (더불어 table_common.py의 자료를 가지고 테이블 생성도 함)
+	▷ table_common.py = 테이블을 create하는 곳,
+					새로운 테이블이 생길때마다 table_(테이블이름).py로 추가하면 됨
+
+★ backend_lib = 데이터 가공
+	▷ lib_common.py = 데이터 가공해서 다시 api_common으로 던지는 곳 (필요시 lib_(이름).py로 추가 필요)
