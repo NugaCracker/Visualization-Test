@@ -51,5 +51,4 @@ def get_population(num):
         "sigun": population.sigun,
         "pop" : population.pops
     }
-    #ㄹㅇㄹ
     return make_response(population_dict, 200)
