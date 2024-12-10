@@ -7,81 +7,101 @@
 <script>
 import { ArcElement, Chart, Legend, PieController, Tooltip } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { ref, onMounted, watch } from 'vue';
 
 Chart.register(ArcElement, Tooltip, Legend, PieController, ChartDataLabels);
 
 export default {
     props: {
         chartData: {
-        type: Object,
-        required: true,
+            type: Object,
+            required: true,
         },
     },
-    mounted() {
-        const ctx = this.$refs.pieChart.getContext("2d");
+    setup(props) {
+        const pieChart = ref(null);
+        let chart = null;
 
-        new Chart(ctx, {
-            type: 'pie',
-            data: this.chartData,
-            options: {
-                responsive: false,
-                animation: {
-                    animateScale: true, // animateScale 추가
-                },
-                plugins: {
-                    title: {
-                        display: true,
-                        text: '현지인 및 외지인 비율',
-                        font: {
-                        size: 30,
-                        },
-                        padding: {
-                        bottom: 20,
-                        },
+        const initChart = () => {
+            const ctx = pieChart.value.getContext("2d");
+            chart = new Chart(ctx, {
+                type: 'pie',
+                data: props.chartData,
+                options: {
+                    responsive: false,
+                    animation: {
+                        animateScale: true,
                     },
-                    legend: {
-                        display: true,
-                        position: 'bottom',
-                        labels: {
-                        font: {
-                            size: 20,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '현지인 및 외지인 비율',
+                            font: {
+                                size: 30,
+                            },
+                            padding: {
+                                bottom: 20,
+                            },
                         },
-                        color: 'black',
-                        padding: 40,
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 20,
+                                },
+                                color: 'black',
+                                padding: 40,
+                            },
                         },
-                    },
-                    datalabels: {
-                        color: '#000',
-                        font: {
-                        size: 22,
+                        datalabels: {
+                            color: '#000',
+                            font: {
+                                size: 22,
+                            },
+                            formatter: (value, ctx) => {
+                                const total = ctx.chart.data.datasets[0].data.reduce((acc, curr) => acc + curr, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${percentage}%\n(${value}명)`;
+                            },
+                            anchor: 'center',
+                            align: 'center',
                         },
-                        formatter: (value, ctx) => {
-                        const total = ctx.chart.data.datasets[0].data.reduce((acc, curr) => acc + curr, 0);
-                        const percentage = ((value / total) * 100).toFixed(1);
-                        return `${percentage}%\n(${value}명)`;
-                        },
-                        anchor: 'center',
-                        align: 'center',
-                    },
                     },
                     layout: {
-                    padding: {
-                        top: 20,
-                        bottom: 50,
+                        padding: {
+                            top: 20,
+                            bottom: 50,
+                        },
                     },
                 },
-            },
+            });
+        };
+
+        onMounted(() => {
+            initChart();
         });
-    },
+
+        watch(() => props.chartData, (newData) => {
+            if (chart) {
+                chart.data = newData;
+                chart.update();
+            }
+        }, { deep: true });
+
+        return {
+            pieChart
+        };
+    }
 };
 </script>
 
 <style scoped>
 canvas {
-display: block;
-margin: 0 auto;
-padding-top: 20px;
-width: 100%;
-height: 100%;
+    display: block;
+    margin: 0 auto;
+    padding-top: 20px;
+    width: 100%;
+    height: 100%;
 }
 </style>

@@ -176,6 +176,8 @@ export default {
       addButton,
       cancelFile,
       handleButtonClick,
+      nonLocalPopulation,
+      localPopulation,
     };
   },
 };
