@@ -3,11 +3,15 @@
 
 from flask_migrate import MigrateCommand
 from flask_script import Manager
+from flask_cors import CORS  # CORS 추가
 
 from backend import app
 from backend_model.database import DBManager
 
 print("module [manager] loaded")
+
+# CORS 설정 추가
+CORS(app)
 
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)

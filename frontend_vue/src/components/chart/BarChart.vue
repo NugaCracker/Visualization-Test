@@ -1,27 +1,111 @@
 <template>
-    <div class="chart-container">
-        <Bar :data="chartData" :options="chartOptions" />
+    <div>
+        <canvas ref="barChart"></canvas>
     </div>
 </template>
 
 <script>
-import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Tooltip } from 'chart.js';
-import { Bar } from 'vue-chartjs';
+import { BarController, BarElement, CategoryScale, Chart, Legend, LinearScale, Title, Tooltip } from 'chart.js';
 
-ChartJS.register(BarElement, Tooltip, Legend, CategoryScale, LinearScale);
+Chart.register(BarElement, BarController, Tooltip, CategoryScale, LinearScale, Title, Legend);
 
 export default {
-    name: 'BarChart',
     props: {
-        chartData: { type: Object, required: true },
-        chartOptions: { type: Object, required: true },
+        chartData: {
+        type: Object,
+        required: true,
+        },
     },
-    components: { Bar },
+    mounted() {
+        const ctx = this.$refs.barChart.getContext("2d");
+
+        new Chart(ctx, {
+        type: 'bar',
+        data: this.chartData,
+        options: {
+            indexAxis: 'y', // 가로 막대 설정
+            responsive: true, // 반응형 설정
+            maintainAspectRatio: false, //가로세로 비율유지 해제
+            plugins: {
+                title: {
+                    display: true,
+                    text: '시군구별 방문 인구 TOP8', // 차트 제목
+                    font: {
+                        size: 30
+                    },
+                    padding: 30
+                },
+                tooltip: {
+                    enabled: false // 기본 툴팁 비활성화
+                },
+                legend: {
+                    display: false // 데이터셋 레이블 제거
+                },
+                datalabels: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    min: 0, // 최소값 설정
+                    max: 20000, // 최대값 설정
+                    ticks: {
+                        stepSize: 2000, // 2000 단위로 설정
+                        callback: function(value) {
+                            return value.toLocaleString(); // 값에 천 단위 콤마 추가
+                        },
+                        color: 'black'
+                    },
+                    title: {
+                        display: true,
+                        text: '방문인구(명)', // X축 제목
+                        font: {
+                            size: 18, // 폰트 크기
+                        },
+                        color: 'black' // 폰트 색상
+                    }
+                },
+                y: {
+                    maxBarThickness: 50, // 차트 바 두께 조정
+                    ticks: {
+                        font: {
+                            size: 15 // 세로 라벨 크기 증가
+                        },
+                        color: 'black' // 모든 레이블을 검은색으로 설정
+                    }
+                }
+            }
+        },
+        plugins: [
+                {
+                    id: 'dataLabelPlugin',
+                    afterDatasetsDraw(chart) {
+                        const { ctx } = chart;
+                        chart.data.datasets.forEach((dataset, i) => {
+                            const meta = chart.getDatasetMeta(i);
+                            meta.data.forEach((bar, index) => {
+                                const value = dataset.data[index].toLocaleString(); // 값에 천 단위 콤마 추가
+                                ctx.fillStyle = 'black';
+                                ctx.font = '15px Arial';
+                                ctx.textAlign = 'center';
+                                ctx.fillText(value, bar.x + 25, (bar.y + bar.height / 2) -12);
+                            });
+                        });
+                    }
+                }
+            ]
+        });
+    },
 };
 </script>
 
 <style scoped>
-    .chart-container {
-    height: 400px;
-    }
+canvas {
+display: block;
+margin: 0 auto;
+padding-bottom: 20px;
+width: 100%;
+height: 576.8px;
+}
 </style>

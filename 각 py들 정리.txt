@@ -11,3 +11,9 @@
 
 ★ backend_lib = 데이터 가공
 	▷ lib_common.py = 데이터 가공해서 다시 api_common으로 던지는 곳 (필요시 lib_(이름).py로 추가 필요)
+
+
+
+실행 : python ./main.py
+node : cd frontend_vue
+	 npm run serve
