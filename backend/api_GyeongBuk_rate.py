@@ -33,6 +33,7 @@ def get_doughnut_data():
         "non_local_population": non_local_population,
         "local_ratio": local_ratio,
         "non_local_ratio": non_local_ratio,
+        "total_population" : total_population
     })
 
 

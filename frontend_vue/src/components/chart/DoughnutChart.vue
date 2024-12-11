@@ -7,7 +7,7 @@
 <script>
 import { ArcElement, Chart, Legend, PieController, Tooltip } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { ref, onMounted, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 Chart.register(ArcElement, Tooltip, Legend, PieController, ChartDataLabels);
 
@@ -60,18 +60,21 @@ export default {
                                 size: 22,
                             },
                             formatter: (value, ctx) => {
-                                const total = ctx.chart.data.datasets[0].data.reduce((acc, curr) => acc + curr, 0);
-                                const percentage = ((value / total) * 100).toFixed(1);
-                                return `${percentage}%\n(${value}명)`;
+                                const index = ctx.dataIndex; // 현재 데이터의 인덱스
+                                const ratio = value.toFixed(1); // ratio 값
+                                const pop = ctx.dataset.customData[index]; // population 값
+                                const population = pop.toLocaleString();
+                                return `${ratio}%\n(${population}명)`; // ratio + population 표시
                             },
                             anchor: 'center',
                             align: 'center',
+                            textAlign: 'center'
                         },
                     },
                     layout: {
                         padding: {
                             top: 20,
-                            bottom: 50,
+                            bottom: 40,
                         },
                     },
                 },
@@ -100,7 +103,6 @@ export default {
 canvas {
     display: block;
     margin: 0 auto;
-    padding-top: 20px;
     width: 100%;
     height: 100%;
 }
