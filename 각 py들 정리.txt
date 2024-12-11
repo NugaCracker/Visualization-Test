@@ -17,3 +17,13 @@
 실행 : python ./main.py
 node : cd frontend_vue
 	 npm run serve
+
+
+num
+dt
+day
+gender
+age
+sido
+sigun
+pop

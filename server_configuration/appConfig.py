@@ -10,8 +10,9 @@ class DevelopmentConfig(CommonConfig):
     BIND_PORT = 8081
     SQLALCHEMY_DATABASE_URI = "mysql://tester:3300@127.0.0.1/emmap"  # 기본 데이터베이스
     SQLALCHEMY_BINDS = {
-        'emmap': "mysql://tester:3300@127.0.0.1/emmap",  # 첫 번째 DB
-        'gyeonbuksportfestival': "mysql://tester:3300@127.0.0.1/gyeonbuksportfestival",  # 두 번째 DB
+        'emmap': "mysql://tester:3300@127.0.0.1/emmap",  # 첫 번째 DB(데이터 바인딩 테스트)
+        'gyeonbuksportfestival': "mysql://tester:3300@127.0.0.1/gyeonbuksportfestival",  # 두 번째 DB(시각화 테스트)
+        'festival': "mysql://tester:3300@127.0.0.1/festival"
     }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
