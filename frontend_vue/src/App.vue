@@ -61,39 +61,39 @@ export default {
     const nonLocalPopulation = ref(0); // 외지인 합계
 
 // Flask API 호출
-    const fetchDoughnutData = async () => {
-        try {
-            const response = await axios.get('/api/doughnut-data');
-            const doughnutdata = response.data;
+    // const fetchDoughnutData = async () => {
+    //     try {
+    //         const response = await axios.get('/api/doughnut-data');
+    //         const doughnutdata = response.data;
 
-            total_population.value = doughnutdata.total_population;
-            localPopulation.value = doughnutdata.local_population;
-            nonLocalPopulation.value = doughnutdata.non_local_population;
+    //         total_population.value = doughnutdata.total_population;
+    //         localPopulation.value = doughnutdata.local_population;
+    //         nonLocalPopulation.value = doughnutdata.non_local_population;
 
-            console.table("doughnutdata:",doughnutdata)
+    //         console.table("doughnutdata:",doughnutdata)
 
-            doughnutChartData.value = {
-                labels: ["현지인", "외지인"],
-                datasets: [
-                    {
-                        label: "비율",
-                        backgroundColor: ["#FCC737", "#E73879"],
-                        data: [doughnutdata.local_ratio, doughnutdata.non_local_ratio],
-                        customData : [localPopulation.value, nonLocalPopulation.value]
-                    },
-                ],
-            };
-        } catch (error) {
-            console.error("Error fetching doughnut data:", error);
-        }
-    };
+    //         doughnutChartData.value = {
+    //             labels: ["현지인", "외지인"],
+    //             datasets: [
+    //                 {
+    //                     label: "비율",
+    //                     backgroundColor: ["#FCC737", "#E73879"],
+    //                     data: [doughnutdata.local_ratio, doughnutdata.non_local_ratio],
+    //                     customData : [localPopulation.value, nonLocalPopulation.value]
+    //                 },
+    //             ],
+    //         };
+    //     } catch (error) {
+    //         console.error("Error fetching doughnut data:", error);
+    //     }
+    // };
 
 
     // Fetch 데이터 onMounted 시 호출
     onMounted(async () => {
-        await fetchDoughnutData(); // 데이터를 가져온 후 다음 코드를 실행
-        console.log("Mounted: LocalPopulation:", localPopulation.value);
-        console.log("Mounted: NonLocalPopulation:", nonLocalPopulation.value);
+        // await fetchDoughnutData(); // 데이터를 가져온 후 다음 코드를 실행
+        // console.log("Mounted: LocalPopulation:", localPopulation.value);
+        // console.log("Mounted: NonLocalPopulation:", nonLocalPopulation.value);
     });
 
 
@@ -114,43 +114,43 @@ export default {
     const sigun_pop = ref([]); // 시군별 방문 인구 배열
 
     // Flask API 호출
-    const fetchBarData = async () => {
-        try {
-            const response = await axios.get('http://192.168.0.170:8081/api/bar-data');
-            const bardata = response.data;
+    // const fetchBarData = async () => {
+    //     try {
+    //         const response = await axios.get('http://192.168.0.170:8081/api/bar-data');
+    //         const bardata = response.data;
 
-            bardata.sort((a,b)=> {
-              if(a.sigun ==="그 외") return 1;
-              if(b.sigun ==="그 외") return -1;
-              return 0;
-            })
-            console.log("bardata : ", bardata);
+    //         bardata.sort((a,b)=> {
+    //           if(a.sigun ==="그 외") return 1;
+    //           if(b.sigun ==="그 외") return -1;
+    //           return 0;
+    //         })
+    //         console.log("bardata : ", bardata);
 
-            // ref의 value를 업데이트
-            sigun.value = bardata.map(item => item.sigun);
-            sigun_pop.value = bardata.map(item => item.visitors);
+    //         // ref의 value를 업데이트
+    //         sigun.value = bardata.map(item => item.sigun);
+    //         sigun_pop.value = bardata.map(item => item.visitors);
 
-            console.log("sigun : ", sigun.value);
-            console.log("sigun_pop : ", sigun_pop.value);
+    //         console.log("sigun : ", sigun.value);
+    //         console.log("sigun_pop : ", sigun_pop.value);
 
-            barChartData.value = {
-                labels: sigun.value,
-                datasets: [
-                  {
-                    backgroundColor: ["#ABDEE6", "#CBAACB", "#FFFFB5", "#FFCCB6", "#F3B0C3", "#D4F0F0"],
-                    data: sigun_pop.value,
-                  },
-                ],
-            };
-        } catch (error) {
-            console.error("Error fetching doughnut data:", error);
-        }
-    };
+    //         barChartData.value = {
+    //             labels: sigun.value,
+    //             datasets: [
+    //               {
+    //                 backgroundColor: ["#ABDEE6", "#CBAACB", "#FFFFB5", "#FFCCB6", "#F3B0C3", "#D4F0F0"],
+    //                 data: sigun_pop.value,
+    //               },
+    //             ],
+    //         };
+    //     } catch (error) {
+    //         console.error("Error fetching doughnut data:", error);
+    //     }
+    // };
 
 
     // Fetch 데이터 onMounted 시 호출
     onMounted(async () => {
-        await fetchBarData(); // 데이터를 가져온 후 다음 코드를 실행
+        // await fetchBarData(); // 데이터를 가져온 후 다음 코드를 실행
     });
 
 

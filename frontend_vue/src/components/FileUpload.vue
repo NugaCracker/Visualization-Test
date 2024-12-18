@@ -158,6 +158,7 @@ setup() {
         filteredCities,
         fileTitle,
         uploadedFile,
+        buttonList,
         handleFileUpload,
         addButton,
         cancelFile,
