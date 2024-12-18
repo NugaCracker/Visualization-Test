@@ -1,5 +1,5 @@
 print("module [backend_lib.lib_common] loaded")
-
+import logging
 from backend_model.table_GyeongBuk_pop import *
 from backend import app
 from backend_lib.lib_common import LibCommon
@@ -7,16 +7,26 @@ from flask import request, make_response, Response, jsonify, Flask
 db = DBManager.db
 
 from sqlalchemy import func, select, case
+logging.basicConfig(level=logging.DEBUG)  # DEBUG 레벨 설정
+
+city = None
+
+@app.route('/api/upload-csv-to-festival', methods=['POST'])
+def upload_csv():
+    # 파일 데이터 받기
+    uploaded_file = request.files.get('file')
+    table_name = request.form.get('table_name')  # 'table_name' 필드 값 가져오기
+    province = request.form.get('province')      # 'province' 필드 값 가져오기
+    city = request.form.get('city')              # 'city' 필드 값 가져오기
+
+    logging.info(f"파일 이름: {uploaded_file.filename}")
+    print(f"테이블 이름: {table_name}")
+    print(f"시도: {province}")
+    print(f"시군구: {city}")
+
 
 @app.route('/api/doughnut-data', methods=['GET'])
 def get_doughnut_data():
-
-    #FileUpload.vue에서 전송된 city 값 가져옴
-    city = request.form.get('city')
-
-    if not city:
-        return jsonify({"error: 시티값 필요"}), 400
-
 
     # 현지인 합계
     local_population = int(db.session.query(

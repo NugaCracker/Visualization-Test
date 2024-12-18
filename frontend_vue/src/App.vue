@@ -63,7 +63,7 @@ export default {
 // Flask API 호출
     const fetchDoughnutData = async () => {
         try {
-            const response = await axios.get('http://192.168.0.170:8081/api/doughnut-data');
+            const response = await axios.get('/api/doughnut-data');
             const doughnutdata = response.data;
 
             total_population.value = doughnutdata.total_population;

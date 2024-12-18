@@ -101,7 +101,7 @@ setup() {
         }
 
         try {
-            const response = await axios.post('http://127.0.0.1:8081/api/doughnut-data', formData, {
+            const response = await axios.post('/api/upload-csv-to-festival', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             console.log("서버 응답:", response.data);
