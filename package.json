@@ -5,6 +5,7 @@
     "chart.js": "^3.9.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "d3": "^7.9.0",
+    "sweetalert2": "^11.15.2",
     "vue-chartjs": "^4.1.2",
     "vue-router": "^4.5.0"
   },
