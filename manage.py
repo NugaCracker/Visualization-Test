@@ -10,12 +10,12 @@ from backend_model.database import DBManager
 
 print("module [manager] loaded")
 
-# CORS 설정 추가
-CORS(app)
 
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
+# CORS 설정 추가
+CORS(app)
 
 # python manage.py init_db
 @manager.command

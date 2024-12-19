@@ -34,10 +34,10 @@
         <!-- 하단: 제목과 파일 업로드 -->
         <div class="row g-3 justify-content-center align-items-center mb-3">
             <div class="col-md-4">
-                <input v-model="fileTitle" type="text" class="form-control" placeholder="제목을 입력하세요" />
+                <input v-model="fileTitle" type="text" class="form-control" placeholder="제목을 입력하세요(영어만 가능)" />
             </div>
             <div class="col-md-3">
-                <input type="file" class="form-control filebox" @change="handleFileUpload" />
+                <input type="file" class="form-control filebox" @change="selectFile" />
             </div>
         </div>
 
@@ -88,28 +88,58 @@ setup() {
         return citiesByProvince[selectedProvince.value] || []; // 기본값 빈 배열 처리
     });
 
-    const handleFileUpload = async () => {
-        const formData = new FormData();
-        formData.append('file', uploadedFile.value);
-        formData.append('table_name', fileTitle.value);
-        formData.append('province', selectedProvince.value);
-        formData.append('city', selectedCity.value);  // city 값 추가
-
-        console.log("FormData 내용:");
-        for (let pair of formData.entries()) {
-            console.log(`${pair[0]}: ${pair[1]}`);
-        }
-
-        try {
-            const response = await axios.post('/api/upload-csv-to-festival', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
-            console.log("서버 응답:", response.data);
-        } catch (error) {
-            console.error('Error uploading file:', error);
-            alert('파일 업로드에 실패했습니다.');
+    //파일 객체는 개별적으로 저장
+    const selectFile = (event) => {
+        const file = event.target.files[0]; // 사용자가 선택한 첫 번째 파일
+        if (file) {
+            uploadedFile.value = file;
+            console.log("selectFile:", uploadedFile.value);
+            
+            // 파일이 선택된 후 handleFileUpload 실행
+            handleFileUpload();
+        } else {
+            console.error("파일이 선택되지 않았습니다.");
+            fileInputclear()
         }
     };
+
+
+    //모든 데이터 append 후 서버 요청
+    const handleFileUpload = async () => {
+        console.log("handleFileUpload",uploadedFile.value)
+
+    if (!uploadedFile.value) {
+        console.error("업로드된 파일이 없습니다.");
+        alert("파일을 선택해주세요.");
+        fileInputclear()
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", uploadedFile.value); // 파일 객체 추가
+    formData.append("table_name", fileTitle.value);
+    formData.append("province", selectedProvince.value);
+    formData.append("city", selectedCity.value);
+
+    console.log("FormData 내용:");
+    for (let pair of formData.entries()) {
+        console.log(`${pair[0]}: ${pair[1]}`);
+    }
+
+    try {
+        const response = await axios.post("/api/upload-csv-to-festival", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        console.log("서버 응답:", response.data);
+        alert("파일 업로드 성공!");
+    } catch (error) {
+        console.error("Error uploading file:", error);
+        alert("파일 업로드에 실패했습니다.");
+        fileInputclear()
+    }
+};
 
 
     const addButton = () => {
@@ -136,11 +166,15 @@ setup() {
         buttonList.value.push({ title: fileTitle.value });
         fileTitle.value = '';
         uploadedFile.value = null;
+        fileInputclear()
 
-        const fileInput = document.getElementsByClassName("filebox")[0];
-        if (fileInput) fileInput.value = ""; // 파일 선택 초기화
     };
-
+    // 파일 input칸 초기화
+    const fileInputclear = () =>{
+        const fileInput = document.getElementsByClassName("filebox")[0];
+        if (fileInput) fileInput.value = "";
+    }
+    // 버튼 제거
     const removeButton = (index) => {
         buttonList.value.splice(index, 1);
     };
@@ -149,6 +183,7 @@ setup() {
         fileTitle.value = '';
         selectedProvince.value = "";
         selectedCity.value = "";
+        fileInputclear()
     };
 
     return {
@@ -163,6 +198,8 @@ setup() {
         addButton,
         cancelFile,
         removeButton,
+        selectFile,
+        fileInputclear
     };
     },
 };

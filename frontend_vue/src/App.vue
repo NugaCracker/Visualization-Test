@@ -28,7 +28,6 @@
 <!-- ----------------------------------------------------------------------------------------------------------- -->
 
 <script>
-import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import FileUpload from './/components/FileUpload.vue';
 import BarChart from './components/chart/BarChart.vue';

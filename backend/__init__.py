@@ -74,6 +74,7 @@ from backend.api_common import *
 from backend.api_GyeongBuk_pop import *
 import backend.api_GyeongBuk_rate
 import backend.api_GyeongBuk_sigun
+import backend.api_makeTable
 
 # login
 from flask_login import LoginManager
