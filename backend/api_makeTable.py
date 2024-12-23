@@ -13,8 +13,8 @@ def upload_csv_to_festival():
     uploaded_file = request.files.get('file')
     table_name = request.form.get('table_name')
 
-    print("테이블 이름 : ",table_name )
-    print("파일 정보 : ",uploaded_file.filename.endswith('.csv') )
+    # print("테이블 이름 : ",table_name )
+    # print("파일 정보 : ",uploaded_file.filename.endswith('.csv') )
 
     if not uploaded_file.filename.endswith('.csv'):
         return jsonify({'message': 'CSV 파일만 업로드 가능합니다.'}), 400
@@ -31,16 +31,16 @@ def upload_csv_to_festival():
         df = pd.read_csv(uploaded_file, header=header_option, encoding='utf-8')
         df.columns = ['dt', 'day', 'gender', 'age', 'sido', 'sigun', 'pop']
         df = df.where(pd.notnull(df), None)  # 알 수 없는 값을 None=null값으로 변환
-        print("CSV 파일 읽기: ", df.head())
+        # print("CSV 파일 읽기: ", df.head())
 
         # 테이블 생성
         engine = DBManager.db.get_engine(bind='festival')
         create_table_in_festival(engine, table_name)
-        print(f"'{table_name}'테이블 생성 완료!")
+        # print(f"'{table_name}'테이블 생성 완료!")
 
         # 데이터 삽입
         insert_data_with_engine(engine, table_name, df)
-        print("데이터 삽입 완료.")
+        # print("데이터 삽입 완료.")
 
         return jsonify({'message': f"'{table_name}' 테이블이 festival 데이터베이스에 성공적으로 생성되었습니다."}), 200
     except Exception as e:

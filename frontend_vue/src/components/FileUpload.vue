@@ -31,7 +31,7 @@
             <!-- 하단: 제목과 파일 업로드 -->
             <div class="row g-3 justify-content-center align-items-center mb-3">
                 <div class="col-md-4">
-                    <input v-model="fileTitle" type="text" class="form-control" placeholder="제목을 입력하세요(영어만 가능)" />
+                    <input v-model="fileTitle" type="text" class="form-control" placeholder="제목을 입력하세요(영어만 가능)" @input="onlyEnglish"/>
                 </div>
                 <div class="col-md-3">
                     <input type="file" class="form-control filebox" @change="selectFile" />
@@ -49,9 +49,20 @@
             <!-- 생성된 버튼 -->
             <div id="buttonbar" class="mt-4 text-center">
                 <div class="d-inline-flex flex-wrap gap-2">
-                    <button v-for="(button, index) in buttonList" :key="index" class="btn btn-outline-primary">
-                        {{ button.title }}
-                        <span @click="removeButton(index)" style="cursor: pointer; color: red;">&times;</span>
+                    <button
+                        v-for="(button, index) in buttonList"
+                        :key="index"
+                        class="btn btn-outline-primary"
+                        @click="sendTitle(button)"
+                    >
+                    {{ button.title }}
+                    <!-- 삭제 버튼 -->
+                    <span
+                        @click.stop="removeButton(index)"
+                        style="cursor: pointer; color: red; margin-left: 10px;"
+                    >
+                        &times;
+                    </span>
                     </button>
                 </div>
             </div>
@@ -66,18 +77,55 @@
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import 'sweetalert2/src/sweetalert2.scss';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import '../assets/sweetalert.css'; // CSS 파일 불러오기
 import { citiesByProvince, provinces } from '../data/sigun';
 
 export default {
-    setup() {
+    setup(props, {emit}) {
         const fileTitle = ref('');
         const buttonList = ref([]);
         const uploadedFile = ref(null);
 
         const selectedProvince = ref("");
         const selectedCity = ref("");
+
+//======================================================================================================
+//테이블 이름 부모 컴포넌트로 전송(fileUpload.vue -> App.vue -> PieChart.vue)
+        const sendTitle = (button) =>{
+            emit("send-title", button.title)
+            console.log("부모로 전송한 타이틀 명 : :", button.title);
+        }
+
+
+//======================================================================================================
+//DB 테이블 목록으로 버튼리스트 만들기
+
+        // DB 테이블 목록 가져오기
+        const fetchTableList = async () => {
+            try {
+                const response = await axios.get('/api/get-table-list');
+                buttonList.value = response.data.tables.map(table => ({
+                    title: table
+                }));
+                console.log('테이블 제목:', buttonList.value);
+            } catch (error) {
+                console.error('테이블 제목 가져오기 실패:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '테이블 로드 실패!',
+                    text: '데이터베이스에서 테이블 제목을 가져오는 중 오류가 발생했습니다.',
+                });
+            }
+        };
+        
+        
+
+
+
+
+//======================================================================================================
+// CSV파일 DB에 테이블로 저장
 
         // 필터링된 시군구 목록
         const filteredCities = computed(() => {
@@ -96,7 +144,6 @@ export default {
                 fileInputclear()
             }
         };
-
 
         //모든 데이터 append 후 서버 요청
         const handleFileUpload = async () => {
@@ -144,7 +191,9 @@ export default {
                     title: '업로드 성공!',
                     text: '데이터가 성공적으로 업로드되었습니다.',
                 });
-
+                
+                //테이블 제목 불러오는 함수 실행
+                await fetchTableList()
             } catch (error) {
                 console.error("Error uploading file:", error);
 
@@ -172,18 +221,58 @@ export default {
                 handleFileUpload();
             }
             cancelFile()
-
         };
+
+//======================================================================================================
+//버튼 제거 및 테이블 삭제
+
+        const removeButton = async (index) => {
+            const tableName = buttonList.value[index].title; // 삭제할 테이블 이름
+            console.log("삭제할 테이블 이름 : ",tableName)
+            const confirmResult = await Swal.fire({
+                title: `${tableName} 테이블 삭제`,
+                text: '정말로 이 파일을 삭제하시겠습니까?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '네, 삭제합니다',
+                cancelButtonText: '취소'
+            });
+
+            if (confirmResult.isConfirmed) {
+                try {
+                    const response = await axios.post('/api/delete-table', { table_name: tableName });
+                    console.log('삭제 응답:', response.data);
+
+                    // 테이블 삭제 성공 시 버튼 목록에서 제거
+                    buttonList.value.splice(index, 1);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: '삭제 성공!',
+                        text: `${tableName} 파일이 삭제되었습니다.`,
+                    });
+                } catch (error) {
+                    console.error('테이블 삭제 실패:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: '삭제 실패!',
+                        text: '파일 삭제 중 오류가 발생했습니다.',
+                    });
+                }
+            }
+        };
+
+
+//======================================================================================================
+//기타 등등
+
+        
         // 파일 input칸 초기화
         const fileInputclear = () => {
             const fileInput = document.getElementsByClassName("filebox")[0];
             if (fileInput) fileInput.value = "";
         }
 
-        // 버튼 제거
-        const removeButton = (index) => {
-            buttonList.value.splice(index, 1);
-        };
 
         //입력초기화
         const cancelFile = () => {
@@ -193,6 +282,16 @@ export default {
             selectedCity.value = ""; // 시군구
             fileInputclear() // 파일 input창 초기화
         };
+
+        //즉시 실행
+        onMounted(() => {
+            fetchTableList(); // 페이지 로드 시 테이블 목록 가져오기
+        });
+
+        //테이블 제목 오직 영어만 입력
+        const onlyEnglish = (event) => {
+            fileTitle.value = event.target.value.replace(/[^a-zA-Z ]/g, '');
+        }
 
         return {
             provinces,
@@ -207,6 +306,8 @@ export default {
             cancelFile,
             removeButton,
             selectFile,
+            onlyEnglish,
+            sendTitle
         };
     },
 };
