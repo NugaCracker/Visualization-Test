@@ -20,15 +20,26 @@ export default {
     setup(props) {
         const barChart = ref(null);
         let chart = null;
+
+        // 최대값 계산 함수
+        const getRoundedMax = (data) => {
+            const max = Math.max(...data) + 5000; // 데이터에서 최대값 찾기
+            return Math.ceil(max / 1000) * 1000; // 1,000 단위로 올림
+        };
+
         const initChart = () => {
             const ctx = barChart.value.getContext("2d");
+
+            // 데이터에서 최대값 계산
+            const max = getRoundedMax(props.chartData.datasets[0].data);
+
             chart = new Chart(ctx, {
                 type: 'bar',
                 data: props.chartData,
                 options: {
                     indexAxis: 'y', // 가로 막대 설정
                     responsive: true, // 반응형 설정
-                    maintainAspectRatio: false, //가로세로 비율유지 해제
+                    maintainAspectRatio: false, // 가로세로 비율유지 해제
                     plugins: {
                         title: {
                             display: true,
@@ -50,9 +61,8 @@ export default {
                     },
                     scales: {
                         x: {
-                            beginAtZero: true,
-                            min: 0, // 최소값 설정
-                            max: 20000, // 최대값 설정
+                            beginAtZero: true, // 최소값 고정
+                            max: max, // 계산된 최대값
                             ticks: {
                                 stepSize: 2000, // 2000 단위로 설정
                                 callback: function (value) {
@@ -99,23 +109,29 @@ export default {
                     }
                 ]
             });
-        }
+        };
+
+        // 데이터 변경 감지 및 업데이트
+        watch(() => props.chartData, (newData) => {
+            if (chart) {
+                chart.data = newData;
+
+                // 새로운 데이터에서 최대값 계산
+                const max = getRoundedMax(newData.datasets[0].data);
+                chart.options.scales.x.max = max;
+
+                chart.update();
+            }
+        }, { deep: true });
 
         onMounted(() => {
             initChart();
         });
-        
-        watch(() => props.chartData, (newData) =>{
-            if(chart) {
-                chart.data = newData;
-                chart.update();
-            }
-        }, { deep: true });
-        return{
+
+        return {
             barChart
         };
     }
-
 };
 </script>
 

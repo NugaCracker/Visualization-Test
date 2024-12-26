@@ -1,3 +1,4 @@
+'''
 print("module [backend_lib.lib_common] loaded")
 
 from backend_model.table_GyeongBuk_pop import *
@@ -59,5 +60,5 @@ def get_bar_data():
     # JSON 데이터 반환
     return jsonify(data)
 
-
+'''
 

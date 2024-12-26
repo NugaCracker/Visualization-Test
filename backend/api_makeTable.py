@@ -24,7 +24,7 @@ def upload_csv_to_festival():
         first_row = pd.read_csv(uploaded_file, header=None, nrows=1, encoding='utf-8').iloc[0, 0]
         uploaded_file.seek(0)  # 파일 포인터를 처음으로 되돌림
         # 첫 번째 값이 'Column1'이라면 헤더 있음(header=0), 그렇지 않으면 헤더 없음(header=None)
-        header_option = 0 if first_row == 'Column1' else None
+        header_option = 0 if first_row == 'Column1' or first_row == 'dt' else None
 
 
         # CSV 파일 읽기(헤더 없는 CSV만)

@@ -70,13 +70,15 @@ DBManager.init(app)
 
 # api
 manager = APIManager(app, flask_sqlalchemy_db=DBManager.db)
-from backend.api_common import *
-from backend.api_GyeongBuk_pop import *
-import backend.api_GyeongBuk_rate
-import backend.api_GyeongBuk_sigun
+from backend.test.api_common import *
+from backend.test.api_GyeongBuk_pop import *
+import backend.test.api_GyeongBuk_rate
+import backend.test.api_GyeongBuk_sigun
 import backend.api_makeTable
 import backend.api_getTableList
 import backend.api_deleteTable
+import backend.api_barChart
+import backend.api_doughnutChart
 
 # login
 from flask_login import LoginManager

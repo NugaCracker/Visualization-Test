@@ -8,27 +8,8 @@
         <div id="box1" class="container my-5 p-4 border shadow-sm bg-light rounded">
             <h3 class="mb-4 text-center">CSV 파일 업로드</h3>
 
-            <!-- 상단: 시도와 시군구 선택 -->
-            <div class="row g-3 justify-content-center align-items-center mb-3">
-                <div class="col-md-3">
-                    <select class="form-control" v-model="selectedProvince" @change="onProvinceChange">
-                        <option disabled value="">시도를 선택하세요</option>
-                        <option v-for="province in provinces" :key="province" :value="province">
-                            {{ province }}
-                        </option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <select class="form-control" v-model="selectedCity">
-                        <option disabled value="">시군구를 선택하세요</option>
-                        <option v-for="city in filteredCities" :key="city" :value="city">
-                            {{ city }}
-                        </option>
-                    </select>
-                </div>
-            </div>
 
-            <!-- 하단: 제목과 파일 업로드 -->
+            <!-- 제목과 파일 업로드 -->
             <div class="row g-3 justify-content-center align-items-center mb-3">
                 <div class="col-md-4">
                     <input v-model="fileTitle" type="text" class="form-control" placeholder="제목을 입력하세요(영어만 가능)" @input="onlyEnglish"/>
@@ -77,18 +58,14 @@
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import 'sweetalert2/src/sweetalert2.scss';
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import '../assets/sweetalert.css'; // CSS 파일 불러오기
-import { citiesByProvince, provinces } from '../data/sigun';
 
 export default {
     setup(props, {emit}) {
         const fileTitle = ref('');
         const buttonList = ref([]);
         const uploadedFile = ref(null);
-
-        const selectedProvince = ref("");
-        const selectedCity = ref("");
 
 //======================================================================================================
 //테이블 이름 부모 컴포넌트로 전송(fileUpload.vue -> App.vue -> PieChart.vue)
@@ -127,11 +104,6 @@ export default {
 //======================================================================================================
 // CSV파일 DB에 테이블로 저장
 
-        // 필터링된 시군구 목록
-        const filteredCities = computed(() => {
-            return citiesByProvince[selectedProvince.value] || []; // 기본값 빈 배열 처리
-        });
-
         //파일 객체는 개별적으로 저장
         const selectFile = (event) => {
             const file = event.target.files[0]; // 사용자가 선택한 첫 번째 파일
@@ -159,8 +131,6 @@ export default {
             const formData = new FormData();
             formData.append("file", uploadedFile.value); // 파일 객체 추가
             formData.append("table_name", fileTitle.value);
-            formData.append("province", selectedProvince.value);
-            formData.append("city", selectedCity.value);
 
             console.log("FormData 내용:");
             for (let pair of formData.entries()) {
@@ -209,11 +179,7 @@ export default {
 
         //확인버튼 눌렀을때
         const addButton = () => {
-            if (!selectedProvince.value) {
-                alert("시도를 선택하세요.");
-            } else if (!selectedCity.value) {
-                alert("시군구를 선택하세요.");
-            } else if (!fileTitle.value.trim()) {
+            if (!fileTitle.value.trim()) {
                 alert('제목을 입력하세요.');
             } else if (!uploadedFile.value) {
                 alert('파일을 선택해주세요');
@@ -265,7 +231,6 @@ export default {
 
 //======================================================================================================
 //기타 등등
-
         
         // 파일 input칸 초기화
         const fileInputclear = () => {
@@ -278,8 +243,6 @@ export default {
         const cancelFile = () => {
             fileTitle.value = ''; // 시각화 제목
             uploadedFile.value = null; //업로드 된 파일
-            selectedProvince.value = ""; // 시도
-            selectedCity.value = ""; // 시군구
             fileInputclear() // 파일 input창 초기화
         };
 
@@ -294,10 +257,6 @@ export default {
         }
 
         return {
-            provinces,
-            selectedProvince,
-            selectedCity,
-            filteredCities,
             fileTitle,
             uploadedFile,
             buttonList,
